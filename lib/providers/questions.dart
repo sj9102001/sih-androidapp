@@ -1,41 +1,86 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 
-//Models import
-import '../models/question.dart';
-
-//Dependency import
-import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class Questions with ChangeNotifier {
-  List<Question> questions = [];
+  // ignore: prefer_final_fields
+  List _questions = [
+    {
+      "questionStatement":
+          "In polar molecular solids, the molecules are held together by ________",
+      "options": [
+        "dipole-dipole interactions",
+        "dispersion forces",
+        "hydrogen bonds",
+        "covalent bonds",
+      ],
+    },
+    {
+      "questionStatement": "Diamond is an example of _______",
+      "options": [
+        "solid with hydrogen bonding",
+        "electrovalent solid",
+        "covalent solid",
+        "glass",
+      ],
+    },
+    {
+      "questionStatement":
+          "Silicon is found in nature in the forms of ________",
+      "options": [
+        "body-centered cubic structure",
+        "hexagonal-closed packed structure",
+        "network solid",
+        "face-centered cubic structure",
+      ],
+    },
+    {
+      "questionStatement":
+          "The first living form named protocell originated in the primitive oceans.",
+      "options": [
+        "True",
+        "False",
+      ],
+    },
+    {
+      "questionStatement": "During which period, origin of life took place?",
+      "options": [
+        "Devonian",
+        "Cenozoic",
+        "Precambrian",
+        "Mesozoic",
+      ],
+    },
+  ];
 
-  List<Question> get question {
-    return [...questions];
+  List get questions {
+    return [..._questions];
   }
 
-  void addQuestion(
-      String? _gradeValue,
-      String? _subjectValue,
-      String? _questionStatementValue,
-      String? _optionA,
-      String? _optionB,
-      String? _optionC,
-      String? _optionD) {
-    Map<int, String> m = {};
-    m.putIfAbsent(0, () => _optionA.toString());
-    m.putIfAbsent(1, () => _optionB.toString());
-    m.putIfAbsent(2, () => _optionC.toString());
-    m.putIfAbsent(3, () => _optionD.toString());
-
-    print(m);
-
-    questions.add(
-      Question(
-          grade: int.parse(_gradeValue!),
-          subject: _subjectValue.toString(),
-          questionStatement: _questionStatementValue.toString(),
-          options: m),
-    );
+  void apiCallTestQuestions(String questionString, int answer, String optionA,
+      String optionB, String optionC, String optionD) async {
+    List<String> optionsList = [];
+    optionsList.add(optionA);
+    optionsList.add(optionB);
+    optionsList.add(optionC);
+    optionsList.add(optionD);
+    try {
+      final url = Uri.parse('http://10.0.2.2:5000/api/question');
+      // ignore: unused_local_variable
+      final response = await http.post(
+        url,
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: json.encode({
+          "unitId": "622721840c19973e5c146814",
+          "questionStatement": questionString.toString(),
+          "options": optionsList,
+          "answer": 0,
+        }),
+      );
+      // ignore: empty_catches
+    } catch (error) {}
   }
 }

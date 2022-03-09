@@ -1,38 +1,33 @@
 import 'package:flutter/material.dart';
 
-//Widgets import
-import '../widgets/question_form.dart';
-import '../widgets/image_input.dart';
+import '../../widgets/image_input.dart';
 
-class QuestionForm extends StatefulWidget {
-  static const routeName = '/question-form';
+import '../../providers/questions.dart';
+
+import 'package:provider/provider.dart';
+
+class QuestionFormPage extends StatefulWidget {
+  static const routeName = '/question-form-page';
+
+  const QuestionFormPage({Key? key}) : super(key: key);
 
   @override
-  State<QuestionForm> createState() => _QuestionFormState();
+  State<QuestionFormPage> createState() => _QuestionFormPageState();
 }
 
-class _QuestionFormState extends State<QuestionForm> {
-//Static data
-  var grades = ["10", "12"];
-
-  final _subjects = [
-    "Physics",
-    "Chemistry",
-    "Mathematics",
-    "English",
-    "Computer Science",
-  ];
-
+class _QuestionFormPageState extends State<QuestionFormPage> {
 //Controllers
+  // ignore: prefer_final_fields
   var _questionStatementController = TextEditingController();
+  // ignore: prefer_final_fields
   var _optionAController = TextEditingController();
+  // ignore: prefer_final_fields
   var _optionBController = TextEditingController();
+  // ignore: prefer_final_fields
   var _optionCController = TextEditingController();
+  // ignore: prefer_final_fields
   var _optionDController = TextEditingController();
 
-//Actual Form Data
-  String? _gradeValue;
-  String? _subjectValue;
   String? _questionStatementValue;
   String? _optionA;
   String? _optionB;
@@ -49,9 +44,16 @@ class _QuestionFormState extends State<QuestionForm> {
       if (_formKey.currentState!.validate()) {
         _formKey.currentState!.save();
       } else {
-        print('Validation triggered');
         return;
       }
+
+      Provider.of<Questions>(context, listen: false).apiCallTestQuestions(
+          _questionStatementValue.toString(),
+          1,
+          _optionA.toString(),
+          _optionB.toString(),
+          _optionC.toString(),
+          _optionD.toString());
     }
 
     return Scaffold(
@@ -79,6 +81,7 @@ class _QuestionFormState extends State<QuestionForm> {
                       ),
                     ),
                     textInputAction: TextInputAction.next, autofocus: true,
+                    // ignore: body_might_complete_normally_nullable
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'Please enter your question!';
@@ -103,6 +106,7 @@ class _QuestionFormState extends State<QuestionForm> {
                       ),
                     ),
                     textInputAction: TextInputAction.next, autofocus: true,
+                    // ignore: body_might_complete_normally_nullable
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'Option A must not be empty';
@@ -127,6 +131,7 @@ class _QuestionFormState extends State<QuestionForm> {
                       ),
                     ),
                     textInputAction: TextInputAction.next, autofocus: true,
+                    // ignore: body_might_complete_normally_nullable
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'Option B must not be empty';
@@ -151,6 +156,7 @@ class _QuestionFormState extends State<QuestionForm> {
                       ),
                     ),
                     textInputAction: TextInputAction.next, autofocus: true,
+                    // ignore: body_might_complete_normally_nullable
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'Option C must not be empty';
@@ -176,6 +182,7 @@ class _QuestionFormState extends State<QuestionForm> {
                     ),
                     textInputAction: TextInputAction.next,
                     autofocus: true,
+                    // ignore: body_might_complete_normally_nullable
                     validator: (value) {
                       if (value!.isEmpty) {
                         return 'Option D must not be empty';
@@ -188,75 +195,16 @@ class _QuestionFormState extends State<QuestionForm> {
                   const SizedBox(
                     height: 5,
                   ),
-                  Row(
-                    children: [
-                      const Text(
-                        'Class:',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 2),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey, width: 1),
-                        ),
-                        margin: const EdgeInsets.only(left: 20),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton(
-                              items: grades.map(buildMenuItem).toList(),
-                              value: _gradeValue,
-                              onChanged: (value) {
-                                setState(() {
-                                  _gradeValue = value.toString();
-                                });
-                              }),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 5,
-                  ),
-                  Row(
-                    children: [
-                      const Text(
-                        'Subject:',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 2),
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey, width: 1),
-                        ),
-                        margin: const EdgeInsets.only(left: 20),
-                        child: DropdownButtonHideUnderline(
-                          child: DropdownButton(
-                              items: _subjects.map(buildMenuItem).toList(),
-                              value: _subjectValue,
-                              onChanged: (value) {
-                                setState(() {
-                                  _subjectValue = value.toString();
-                                });
-                              }),
-                        ),
-                      )
-                    ],
-                  ),
                   ElevatedButton(
                     onPressed: onSubmitForm,
-                    child: Text('Submit'),
+                    child: const Text('Submit'),
                     autofocus: true,
                   ),
                 ],
               ),
             ),
           ),
-          ImageInput(),
+          const ImageInput(),
         ]),
       ),
     );
@@ -264,6 +212,6 @@ class _QuestionFormState extends State<QuestionForm> {
 }
 
 DropdownMenuItem<String> buildMenuItem(String item) => DropdownMenuItem(
-      child: Text(item, style: TextStyle(fontSize: 20)),
+      child: Text(item, style: const TextStyle(fontSize: 20)),
       value: item,
     );

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 
-//Widget imports
 import '../widgets/custom_drawer.dart';
-import '../widgets/custom_elevatedbutton.dart';
+import '../widgets/custom_panel_button.dart';
 
-//Screen Imports
-import './ask_question_page.dart';
-
-//Dependencies Imports
+import '/screens/test_page.dart';
+import 'student/student_page.dart';
+import 'teacher/teacher_page.dart';
 
 class HomePage extends StatelessWidget {
   static const routeName = '/home-page';
@@ -16,13 +14,25 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void askAQuestionHandler() {
+    final screenSize = MediaQuery.of(context).size;
+    void studentOnTapHandler() {
       Navigator.of(context).pushNamed(
-        QuestionForm.routeName,
+        StudentPage.routeName,
       );
     }
 
-    final screenSize = MediaQuery.of(context).size;
+    void teacherOnTapHandler() {
+      Navigator.of(context).pushNamed(
+        TeacherPage.routeName,
+      );
+    }
+
+    void testApiHandler() {
+      Navigator.of(context).pushNamed(
+        TestPage.routeName,
+      );
+    }
+
     return Scaffold(
       drawer: const NavigationDrawerWidget(),
       appBar: AppBar(
@@ -36,16 +46,19 @@ class HomePage extends StatelessWidget {
               top: screenSize.height * 0.03,
             ),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CustomElevatedButton(
-                  icon: Icons.question_mark,
-                  labelText: 'Ask a question',
-                  onPressedHandler: askAQuestionHandler,
+                CustomPanelButton(
+                  text: 'Student',
+                  onTapHandler: studentOnTapHandler,
                 ),
-                const CustomElevatedButton(
-                  icon: Icons.question_answer,
-                  labelText: 'Answer a question',
-                  onPressedHandler: null,
+                CustomPanelButton(
+                  text: 'Teacher',
+                  onTapHandler: teacherOnTapHandler,
+                ),
+                CustomPanelButton(
+                  text: 'Test API',
+                  onTapHandler: testApiHandler,
                 ),
               ],
             ),
