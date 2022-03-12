@@ -47,7 +47,7 @@ class _QuestionFormPageState extends State<QuestionFormPage> {
         return;
       }
 
-      Provider.of<Questions>(context, listen: false).apiCallTestQuestions(
+      Provider.of<Questions>(context, listen: false).postQuestions(
           _questionStatementValue.toString(),
           1,
           _optionA.toString(),

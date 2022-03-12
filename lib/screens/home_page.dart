@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../widgets/custom_drawer.dart';
 import '../widgets/custom_panel_button.dart';
 
-import '/screens/test_page.dart';
 import 'student/student_page.dart';
 import 'teacher/teacher_page.dart';
 
@@ -24,12 +23,6 @@ class HomePage extends StatelessWidget {
     void teacherOnTapHandler() {
       Navigator.of(context).pushNamed(
         TeacherPage.routeName,
-      );
-    }
-
-    void testApiHandler() {
-      Navigator.of(context).pushNamed(
-        TestPage.routeName,
       );
     }
 
@@ -56,9 +49,13 @@ class HomePage extends StatelessWidget {
                   text: 'Teacher',
                   onTapHandler: teacherOnTapHandler,
                 ),
+                // CustomPanelButton(
+                //   text: 'Test API',
+                //   onTapHandler: testApiHandler,
+                // ),
                 CustomPanelButton(
-                  text: 'Test API',
-                  onTapHandler: testApiHandler,
+                  text: 'Approver',
+                  onTapHandler: () {},
                 ),
               ],
             ),

@@ -58,7 +58,29 @@ class Questions with ChangeNotifier {
     return [..._questions];
   }
 
-  void apiCallTestQuestions(String questionString, int answer, String optionA,
+  Future<List> getQuestions(String subId) async {
+    try {
+      final url = Uri.parse('http://10.0.2.2:5000/api/questions');
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+        },
+        body: json.encode(
+          {
+            "subject": subId,
+          },
+        ),
+      );
+      final questionData = json.decode(response.body)["Questions"];
+      return questionData;
+    } catch (error) {
+      // ignore: use_rethrow_when_possible
+      throw error;
+    }
+  }
+
+  void postQuestions(String questionString, int answer, String optionA,
       String optionB, String optionC, String optionD) async {
     List<String> optionsList = [];
     optionsList.add(optionA);
@@ -73,14 +95,19 @@ class Questions with ChangeNotifier {
         headers: {
           "Content-type": "application/json",
         },
-        body: json.encode({
-          "unitId": "622721840c19973e5c146814",
-          "questionStatement": questionString.toString(),
-          "options": optionsList,
-          "answer": 0,
-        }),
+        body: json.encode(
+          {
+            "unitId": "622721840c19973e5c146814",
+            "questionStatement": questionString.toString(),
+            "options": optionsList,
+            "answer": 0,
+          },
+        ),
       );
       // ignore: empty_catches
-    } catch (error) {}
+    } catch (error) {
+      // ignore: use_rethrow_when_possible
+      throw error;
+    }
   }
 }

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sihapp/models/subject.dart' as sub;
 
 import '../../providers/questions.dart';
+import '../../providers/standard_info.dart';
+
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -18,21 +21,17 @@ class _ViewQuestionsPageState extends State<ViewQuestionsPage> {
   List _questionsList = [];
 
   final _grades = ["All Class", "10", "12"];
-  final _subjects = [
-    "All Subject",
-    "Physics",
-    "Chemistry",
-    "Mathematics",
-    "English",
-    "Computer Science",
+  List<sub.Subject> _subjects = [
+    sub.Subject(name: "All Subject"),
   ];
+
   var _gradesValue = "All Class";
   var _subjectsValue = "All Subject";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('View All Question'),
+        title: const Text('Questions List'),
       ),
       body: Column(
         children: [
@@ -49,10 +48,22 @@ class _ViewQuestionsPageState extends State<ViewQuestionsPage> {
                       borderRadius: BorderRadius.circular(30)),
                   child: DropdownButtonHideUnderline(
                     child: DropdownButton(
-                        items: _grades.map(buildMenuItem).toList(),
+                        items: _grades.map(buildMenuItemGrade).toList(),
                         value: _gradesValue,
-                        onChanged: (value) {
+                        onChanged: (value) async {
+                          List<sub.Subject> tempList = [];
+                          _subjectsValue = "All Subject";
+                          if (value != "All Class") {
+                            tempList = await Provider.of<StandardInfoProvider>(
+                                    context,
+                                    listen: false)
+                                .getSubjectList(int.parse(value.toString()));
+                          }
                           setState(() {
+                            _subjects = [
+                              sub.Subject(name: "All Subject"),
+                            ];
+                            _subjects.addAll(tempList);
                             _gradesValue = value.toString();
                           });
                         }),
@@ -80,16 +91,21 @@ class _ViewQuestionsPageState extends State<ViewQuestionsPage> {
                 ),
                 Expanded(
                   child: IconButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      String subjectId = '';
+                      for (int i = 0; i < _subjects.length; i++) {
+                        if (_subjects[i].name == _subjectsValue) {
+                          subjectId = _subjects[i].subjectId!;
+                        }
+                      }
+                      final newList =
+                          await Provider.of<Questions>(context, listen: false)
+                              .getQuestions(subjectId);
                       setState(() {
-                        _questionsList =
-                            Provider.of<Questions>(context, listen: false)
-                                .questions;
+                        _questionsList = newList;
                       });
-
-                      print(_questionsList);
                     },
-                    icon: Icon(Icons.search),
+                    icon: const Icon(Icons.search),
                   ),
                 ),
               ],
@@ -100,26 +116,27 @@ class _ViewQuestionsPageState extends State<ViewQuestionsPage> {
           ),
           Expanded(
               child: Container(
-            child: _questionsList.length == 0
-                ? Center(
+            child: _questionsList.isEmpty
+                ? const Center(
                     child: Text('No Questions Available'),
                   )
                 : ListView.builder(
                     itemBuilder: (_, questionIndex) => Padding(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       child: Column(
                         children: [
+                          // ignore: sized_box_for_whitespace
                           Container(
                             width: double.infinity,
                             child: Text(
                               (questionIndex + 1).toString() +
                                   ') ' +
-                                  _questionsList[questionIndex]
-                                      ["questionStatement"],
+                                  _questionsList[questionIndex]["question"],
                               style: GoogleFonts.roboto(fontSize: 20),
                             ),
                           ),
                           ..._questionsList[questionIndex]["options"]
+                              // ignore: sized_box_for_whitespace
                               .map((text) => Container(
                                     width: double.infinity,
                                     child: Text(
@@ -141,7 +158,14 @@ class _ViewQuestionsPageState extends State<ViewQuestionsPage> {
   }
 }
 
-DropdownMenuItem<String> buildMenuItem(String item) => DropdownMenuItem(
+DropdownMenuItem<String> buildMenuItemGrade(String item) => DropdownMenuItem(
       child: Text(item, style: GoogleFonts.roboto(fontSize: 20)),
       value: item,
     );
+
+DropdownMenuItem<String> buildMenuItem(sub.Subject item) {
+  return DropdownMenuItem(
+    child: Text(item.name, style: GoogleFonts.roboto(fontSize: 20)),
+    value: item.name,
+  );
+}
